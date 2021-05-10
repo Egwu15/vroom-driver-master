@@ -1,0 +1,71 @@
+name: vroom_driver
+description: A new Flutter application.
+
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+version: 1.0.1+2
+
+environment:
+  sdk: ">=2.7.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.0
+  flutter_bloc: ^6.0.1
+  flutter_phoenix: ^0.1.0
+  shared_preferences: ^2.0.5
+  flutter_custom_clippers: ^1.1.2
+  animation_wrappers: ^0.0.1
+  get: ^4.1.4
+  http: ^0.13.1
+  hive: ^2.0.4
+  path_provider: ^2.0.1
+  flutter_form_builder: ^6.0.0
+  cloud_firestore: ^1.0.7
+  firebase_core: ^1.1.0
+  intl: ^0.17.0
+  file_picker: ^3.0.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  # flutter_launcher_name: "^0.0.1"
+  # flutter_launcher_icons: "^0.8.0"
+
+
+flutter_launcher_name:
+  name: "Vroom Driver"
+
+flutter_icons:
+  android: "ic_launcher"
+  ios: true
+  image_path: "assets/appIcon.png"
+
+flutter:
+
+  uses-material-design: true
+
+  assets:
+    - assets/
+    - assets/Icons/
+    - assets/ProfileImages/
+    - assets/SocialIcons/
+    - assets/Placeholders/
+    - assets/StatusSymbols/
+    - assets/Verify/
+
+  fonts:
+    - family: Poppins
+      fonts:
+        - asset: fonts/Poppins/Poppins-Bold.ttf
+        - asset: fonts/Poppins/Poppins-BoldItalic.ttf
+        - asset: fonts/Poppins/Poppins-Light.ttf
+        - asset: fonts/Poppins/Poppins-LightItalic.ttf
+        - asset: fonts/Poppins/Poppins-Medium.ttf
+        - asset: fonts/Poppins/Poppins-MediumItalic.ttf
+        - asset: fonts/Poppins/Poppins-Regular.ttf
+        - asset: fonts/Poppins/Poppins-Thin.ttf
