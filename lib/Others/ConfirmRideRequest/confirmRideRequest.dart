@@ -268,7 +268,7 @@ class _ConfirmRideRequestState extends State<ConfirmRideRequest> {
                       style: theme.textTheme.subtitle2,
                     ),
                     TextSpan(
-                      text: '\$ 120.00',
+                      text: '\N 120.00',
                       style: theme.textTheme.bodyText2.copyWith(
                         fontSize: 12,
                       ),

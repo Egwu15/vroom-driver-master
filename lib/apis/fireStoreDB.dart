@@ -18,6 +18,12 @@ class CloudDB {
     });
   }
 
+  updatePushToken(pushToken, userId) {
+    firestore.collection('users').doc(userId.toString()).update({
+      "pushToken": pushToken,
+    });
+  }
+
   // getAgentOnline({userId}) {
   //   FirebaseFirestore.instance
   //       .collection('users')

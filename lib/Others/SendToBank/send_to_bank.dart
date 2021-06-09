@@ -39,7 +39,7 @@ class _SendToBankState extends State<SendToBank> {
                           color: textColor, fontWeight: FontWeight.w500),
                     ),
                     Text(
-                      '\$ 120',
+                      '\N 120',
                       style: theme.textTheme.headline6.copyWith(
                           fontSize: 45, letterSpacing: 2, color: textColor),
                     ),

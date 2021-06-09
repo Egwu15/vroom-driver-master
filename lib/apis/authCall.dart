@@ -1,7 +1,12 @@
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:get/route_manager.dart';
 import 'package:http/http.dart' as http;
 import 'package:vroom_driver/AppNavigation/app_navigation.dart';
 import 'package:vroom_driver/Components/snackBar.dart';
+import 'package:vroom_driver/Others/Quotation/quotationSucess.dart';
 import 'package:vroom_driver/apis/fireStoreDB.dart';
 import 'package:vroom_driver/apis/hiveStorage.dart';
 import 'package:vroom_driver/models/tokenModel.dart';
@@ -9,9 +14,18 @@ import 'package:vroom_driver/models/userModel.dart';
 import 'package:vroom_driver/models/userRegModel.dart';
 
 HiveCalls hiveCalls = HiveCalls();
+String pushToken;
+Stream<String> _tokenStream;
+String baseUrl = "https://tugent.tbmholdingltd.com/api";
+
+setPushToken(tok, userId) async {
+  await hiveCalls.addPushToken(tok);
+  await CloudDB().updatePushToken(tok, userId);
+}
+
 signUp({email, password, name, phoneNumber}) async {
   try {
-    var url = Uri.parse('https://tugent.hostify.com.ng/api/agent_registration');
+    var url = Uri.parse('$baseUrl/agent_registration');
     var response = await http.post(url, body: {
       'email': email,
       'password': password,
@@ -20,11 +34,13 @@ signUp({email, password, name, phoneNumber}) async {
     });
     print(response.body);
     if (response.statusCode == 200) {
-     
+      await hiveCalls
+          .addUserToken(userRegisterdModelFromJson(response.body).token);
       await getUserDetails(userRegisterdModelFromJson(response.body).token);
+
       await CloudDB()
           .setUserDetails(userid: await hiveCalls.getUserId(), name: name);
-      Get.to(() => AppNavigation());
+      Get.offAll(() => AppNavigation());
     } else if (response.statusCode == 422) {
       showCustomSnackBar('email is already used');
     } else {
@@ -37,7 +53,7 @@ signUp({email, password, name, phoneNumber}) async {
 
 signIn({email, password}) async {
   try {
-    var url = Uri.parse('https://tugent.hostify.com.ng/api/login');
+    var url = Uri.parse('$baseUrl/login');
     var response = await http.post(url, body: {
       'email': email,
       'password': password,
@@ -45,9 +61,12 @@ signIn({email, password}) async {
     print(response.body);
     if (response.statusCode == 200) {
       print((tokenModelFromJson(response.body).token));
-      
+
+      await hiveCalls
+          .addUserToken(userRegisterdModelFromJson(response.body).token);
+
       await getUserDetails(tokenModelFromJson(response.body).token).then((_) {
-        Get.to(
+        Get.offAll(
           () => AppNavigation(),
         );
       });
@@ -63,16 +82,28 @@ signIn({email, password}) async {
 
 getUserDetails(token) async {
   try {
-    var url = Uri.parse('https://tugent.hostify.com.ng/api/user');
+    var url = Uri.parse('$baseUrl/user');
     var response = await http.get(url, headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
       'Authorization': 'Bearer $token',
     });
-    print("statuscode: ${response.statusCode}");
+    print("statuscode: ${response.body}");
     if (response.statusCode == 201) {
-      print("userid: ${userModelFromJson(response.body).data.id}");
-      await hiveCalls.addUserId(userModelFromJson(response.body).data.id);
+     var userId = userModelFromJson(response.body).data.id;
+      var userName = userModelFromJson(response.body).data.name;
+      var userEmail = userModelFromJson(response.body).data.email;
+      var picture = userModelFromJson(response.body).data.avater;
+      var active = userModelFromJson(response.body).data.activewithUser;
+      var phoneNumber = userModelFromJson(response.body).data.phoneNumber;
+      print("userid: $userId");
+      await hiveCalls.addUserId(userId);
+      await createPushToken(userId);
+      await hiveCalls.addUserEmail(userEmail);
+      await hiveCalls.addUserName(userName);
+      await hiveCalls.addProfilePhoto(picture);
+      await hiveCalls.addActiveWith(active);
+      await hiveCalls.addPhoneNumber(phoneNumber);
       // print('object');
       //   Get.to(
       //     () => AppNavigation(),
@@ -84,3 +115,62 @@ getUserDetails(token) async {
   }
 }
 
+setQuotation(File rawFile, amount) async {
+  // String fileData = base64Encode(rawFile.readAsBytesSync());
+  print(rawFile.uri);
+  try {
+    var token = await hiveCalls.getUserToken();
+    print(token);
+    var url = Uri.parse('$baseUrl/quotation');
+    var request = new http.MultipartRequest(
+      "POST",
+      url,
+    );
+    request.headers['authorization'] = 'Bearer $token';
+    request.fields['amount'] = amount;
+    request.files.add(new http.MultipartFile('attachment',
+        File(rawFile.path).readAsBytes().asStream(), File(rawFile.path).lengthSync(),
+        filename: rawFile.path.split("/").last));
+
+    // var response = await http.post(url, headers: {
+    //   // 'Content-Type': 'application/json',
+    //   // 'Accept': 'application/json',
+    //   'Authorization': 'Bearer $token',
+    // }, body: {
+    //   "amount": amount,
+    //   "attachment": fileData
+    // });
+
+   await request.send().then((response) async {
+      print("statuscode: ${response.statusCode}");
+      var rb = await response.stream.bytesToString();
+      print("resBody: $rb");
+
+      if (response.statusCode == 201) {
+        // print("userid: ${userModelFromJson(response.body).data.id}");
+        // await hiveCalls.addUserId(userModelFromJson(response.body).data.id);
+        // // print('object');
+        //   Get.to(
+        //     () => AppNavigation(),
+        // );
+        
+        Get.to(()=>QuotstionSucess());
+      } else if (response.statusCode == 401) {
+        showCustomSnackBar('amount is about 100,000');
+      } else
+        showCustomSnackBar('Error please try again');
+    });
+  } catch (e) {
+    print(e);
+  }
+}
+
+createPushToken(userId) {
+  FirebaseMessaging.instance.getToken().then((tok) {
+    setPushToken(tok, userId);
+  });
+  _tokenStream = FirebaseMessaging.instance.onTokenRefresh;
+  _tokenStream.listen((tok) {
+    setPushToken(tok, userId);
+  });
+}

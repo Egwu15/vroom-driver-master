@@ -23,14 +23,20 @@ class AccountItems {
 
 class _MoreState extends State<More> {
   int myId;
+  String name = "";
+  String email = "";
+  HiveCalls hiveCalls = HiveCalls();
   @override
   void initState() {
     super.initState();
-    userId();
+    getUserProperties();
   }
 
-  userId() async {
-    myId = await HiveCalls().getUserId();
+  getUserProperties() async {
+    myId = await hiveCalls.getUserId();
+    name = await hiveCalls.getUserName();
+    email = await hiveCalls.getUserEmail();
+    setState(() {});
   }
 
   @override
@@ -110,12 +116,16 @@ class _MoreState extends State<More> {
                         fit: BoxFit.fill),
                   ),
                 ),
-                Column(
+                Column(crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'George Williamson',
-                      style: theme.textTheme.bodyText1.copyWith(
-                        fontWeight: FontWeight.w500,
+                    
+                    Padding(
+                      padding: const EdgeInsets.only(left:20.0),
+                      child: Text(
+                        name,
+                        style: theme.textTheme.bodyText1.copyWith(
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ),
                     Row(
@@ -123,36 +133,36 @@ class _MoreState extends State<More> {
                         SizedBox(
                           width: 20,
                         ),
-                        Icon(
-                          Icons.star,
-                          color: secondaryColor,
-                          size: 16,
-                        ),
-                        Icon(
-                          Icons.star,
-                          color: secondaryColor,
-                          size: 16,
-                        ),
-                        Icon(
-                          Icons.star,
-                          color: secondaryColor,
-                          size: 16,
-                        ),
-                        Icon(
-                          Icons.star,
-                          color: secondaryColor,
-                          size: 16,
-                        ),
-                        Icon(
-                          Icons.star,
-                          color: secondaryColor,
-                          size: 16,
-                        ),
-                        SizedBox(
-                          width: 10,
-                        ),
+                        //     Icon(
+                        //       Icons.star,
+                        //       color: secondaryColor,
+                        //       size: 16,
+                        //     ),
+                        //     Icon(
+                        //       Icons.star,
+                        //       color: secondaryColor,
+                        //       size: 16,
+                        //     ),
+                        //     Icon(
+                        //       Icons.star,
+                        //       color: secondaryColor,
+                        //       size: 16,
+                        //     ),
+                        //     Icon(
+                        //       Icons.star,
+                        //       color: secondaryColor,
+                        //       size: 16,
+                        //     ),
+                        //     Icon(
+                        //       Icons.star,
+                        //       color: secondaryColor,
+                        //       size: 16,
+                        //     ),
+                        //     SizedBox(
+                        //       width: 10,
+                        //     ),
                         Text(
-                          '(53 ' + locale.reviews + ')',
+                          email,
                           style: theme.textTheme.subtitle2,
                         ),
                       ],

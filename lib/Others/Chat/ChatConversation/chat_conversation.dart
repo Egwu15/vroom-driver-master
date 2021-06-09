@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:animation_wrappers/animation_wrappers.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -5,8 +7,9 @@ import 'package:get/route_manager.dart';
 import 'package:intl/intl.dart';
 import 'package:vroom_driver/Locale/locales.dart';
 import 'package:vroom_driver/Others/Chat/Chats/chats.dart';
-import 'package:vroom_driver/Others/ReferNow/Quotation.dart';
+import 'package:vroom_driver/Others/Quotation/Quotation.dart';
 import 'package:vroom_driver/Theme/colors.dart';
+import 'package:http/http.dart' as http;
 
 class ChatConversation extends StatefulWidget {
   ChatConversation();
@@ -19,10 +22,51 @@ class _ChatConversationState extends State<ChatConversation> {
   TextEditingController textEditingController = TextEditingController();
   var format = DateFormat.yMd().add_jm();
   ScrollController scrollController = ScrollController();
+  String msg;
+
   @override
   void initState() {
     super.initState();
     getGroupId();
+  }
+
+  String constructFCMPayload(String token) {
+    return jsonEncode({
+      'token': token,
+      'data': {
+        'via': 'FlutterFire Cloud Messaging!!!',
+        'count': "count",
+      },
+      'notification': {
+        'title': 'message from...',
+        'body': msg,
+      },
+      'to': token,
+    });
+  }
+
+  Future<void> sendPushMessage() async {
+    if (pushToken == null) {
+      print('Unable to send FCM message, no token exists.');
+      return;
+    }
+
+    try {
+      var response = await http.post(
+        Uri.parse('https://fcm.googleapis.com/fcm/send'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization':
+              'Bearer AAAAxR02Itk:APA91bE-s7VfKNbjWLLL1W0Rrzo7KbHuRZmrwumXpNtEACU4T-Zhkk6QB7xihBoFqW-sJjZN2F4U1aKVe5TUzKGhPbhrfJVGA0NwjrPJSDd2XJAt9yVISC10OEu1xSJ3aleHT0EBCyTg',
+        },
+        body: constructFCMPayload(pushToken),
+      );
+
+      print('FCM request for device sent!');
+      print(response.body);
+    } catch (e) {
+      print(e);
+    }
   }
 
   getGroupId() {
@@ -34,7 +78,7 @@ class _ChatConversationState extends State<ChatConversation> {
   }
 
   sendMsg() {
-    String msg = textEditingController.text.trim();
+    msg = textEditingController.text.trim();
     textEditingController.clear();
 
     /// Upload images to firebase and returns a URL
@@ -45,6 +89,8 @@ class _ChatConversationState extends State<ChatConversation> {
           .doc(groupChatId)
           .collection(groupChatId)
           .doc(DateTime.now().millisecondsSinceEpoch.toString());
+
+      sendPushMessage();
 
       FirebaseFirestore.instance.runTransaction((transaction) async {
         transaction.set(ref, {
@@ -189,7 +235,7 @@ class _ChatConversationState extends State<ChatConversation> {
                     fillColor: Color(0xfff8f9fd),
                     prefixIcon: IconButton(
                       icon: Icon(Icons.attach_email),
-                      onPressed: ()=>Get.to(()=>ReferNow()),
+                      onPressed: () => Get.to(() => ReferNow()),
                     ),
                     suffixIcon:
                         // GestureDetector(

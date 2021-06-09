@@ -15,6 +15,7 @@ class EntryField extends StatefulWidget {
   final Function validator;
   final TextInputType keyBoardType;
   final TextEditingController controller;
+  final bool obscured;
   EntryField(
       {this.readOnly,
       // this.initialValue,
@@ -26,7 +27,8 @@ class EntryField extends StatefulWidget {
       this.padding,
       this.validator,
       this.keyBoardType,
-      this.controller});
+      this.controller,
+      this.obscured});
 
   @override
   _EntryFieldState createState() => _EntryFieldState();
@@ -71,6 +73,7 @@ class _EntryFieldState extends State<EntryField> {
                   style: theme.textTheme.bodyText2,
                   autovalidateMode: AutovalidateMode.always,
                   // initialValue: widget.initialValue,
+                  obscureText: widget.obscured ?? false,
                   readOnly: widget.readOnly ?? false,
                   textAlignVertical: TextAlignVertical.center,
                   textAlign: TextAlign.end,

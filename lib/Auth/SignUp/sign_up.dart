@@ -4,6 +4,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:get/get.dart';
+import 'package:vroom_driver/Auth/SignIn/sign_in.dart';
 import 'package:vroom_driver/Components/custom_button.dart';
 import 'package:vroom_driver/Components/entryField.dart';
 import 'package:vroom_driver/Components/snackBar.dart';
@@ -21,7 +23,8 @@ class _SignUpUIState extends State<SignUpUI> {
   final TextEditingController phoneNumberController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
- bool _isLoading = false;
+  bool _isLoading = false;
+  double screenHeight =Get.height * 0.25;
   @override
   Widget build(BuildContext context) {
    
@@ -32,40 +35,40 @@ class _SignUpUIState extends State<SignUpUI> {
         SingleChildScrollView(
           child: Column(
             children: [
-              Stack(children: [
-                Image.asset(
-                  'assets/shopping.jpg',
-                  height: MediaQuery.of(context).size.height * 0.45,
-                  width: MediaQuery.of(context).size.width,
-                  fit: BoxFit.fill,
-                ),
-                PositionedDirectional(
-                  top: 40,
+              // Stack(children: [
+              //   Image.asset(
+              //     'assets/shopping.jpg',
+              //     height: MediaQuery.of(context).size.height * 0.45,
+              //     width: MediaQuery.of(context).size.width,
+              //     fit: BoxFit.fill,
+              //   ),
+              //   PositionedDirectional(
+              //     top: 40,
                   
-                  start: 16,
-                  end: 0,
-                  child: Row(
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.pop(context);
-                        },
-                        child: Icon(
-                          Icons.arrow_back,
-                          color: theme.scaffoldBackgroundColor,
-                        ),
-                      ),
-                      SizedBox(
-                        width: 20,
-                      ),
-                      Text(
-                        locale.signUp.toUpperCase(),
-                        style: theme.textTheme.headline6,
-                      )
-                    ],
-                  ),
-                ),
-              ]),
+              //     start: 16,
+              //     end: 0,
+              //     child: Row(
+              //       children: [
+              //         GestureDetector(
+              //           onTap: () {
+              //             Navigator.pop(context);
+              //           },
+              //           child: Icon(
+              //             Icons.arrow_back,
+              //             color: theme.scaffoldBackgroundColor,
+              //           ),
+              //         ),
+              //         SizedBox(
+              //           width: 20,
+              //         ),
+              //         Text(
+              //           locale.signUp.toUpperCase(),
+              //           style: theme.textTheme.headline6,
+              //         )
+              //       ],
+              //     ),
+              //   ),
+              // ]),
               SizedBox(
                 height: 10,
               ),
@@ -77,52 +80,57 @@ class _SignUpUIState extends State<SignUpUI> {
               //       child: Column(
               //         children: [
 
-              Form(
-                  key: _formKey,
-                  child: Column(
-                    children: [
-                      SizedBox(
-                        height: 8,
+              Padding(
+                padding:  EdgeInsets.only(top: screenHeight ),
+                child: Form(
+                    key: _formKey,
+                    child: Center(
+                      child: Column(mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          SizedBox(
+                            height: 8,
+                          ),
+                          EntryField(
+                            controller: fullNameController,
+                            label: locale.fullName?? 'Full Name',
+                            borderRadiusTopLeft: Radius.circular(12),
+                            borderRadiusTopRight: Radius.circular(12),
+                            validator: FormBuilderValidators.minLength(context, 6,
+                                errorText: "at least 5 letters"),
+                          ),
+                          EntryField(
+                            controller: emailController,
+                            label: locale.emailAddress,
+                            keyBoardType: TextInputType.emailAddress,
+                            validator: FormBuilderValidators.email(context,
+                                errorText: 'Incorrect email format'),
+                            // initialValue: 'george@mail.com',
+                          ),
+                          EntryField(
+                            controller: phoneNumberController,
+                            label: locale.phoneNumber,
+                            keyBoardType: TextInputType.number,
+                            validator: FormBuilderValidators.compose([
+                              FormBuilderValidators.minLength(context, 10,
+                                  errorText: "Not up to 10 characters")
+                            ]),
+                          ),
+                          EntryField(
+                            controller: passwordController,
+                            label: ' ' + locale.password,
+                            // initialValue: '*  *  *  *  *',
+                            borderRadiusBottomLeft: Radius.circular(12),
+                            borderRadiusBottomRight: Radius.circular(12),
+                            validator: FormBuilderValidators.minLength(context, 5,
+                                errorText: "5 dights at least"),
+                          ),
+                          SizedBox(
+                            height: 8,
+                          ),
+                        ],
                       ),
-                      EntryField(
-                        controller: fullNameController,
-                        label: locale.fullName?? 'Full Name',
-                        borderRadiusTopLeft: Radius.circular(12),
-                        borderRadiusTopRight: Radius.circular(12),
-                        validator: FormBuilderValidators.minLength(context, 6,
-                            errorText: "at least 5 letters"),
-                      ),
-                      EntryField(
-                        controller: emailController,
-                        label: locale.emailAddress,
-                        keyBoardType: TextInputType.emailAddress,
-                        validator: FormBuilderValidators.email(context,
-                            errorText: 'Incorrect email format'),
-                        // initialValue: 'george@mail.com',
-                      ),
-                      EntryField(
-                        controller: phoneNumberController,
-                        label: locale.phoneNumber,
-                        keyBoardType: TextInputType.number,
-                        validator: FormBuilderValidators.compose([
-                          FormBuilderValidators.minLength(context, 10,
-                              errorText: "Not up to 10 characters")
-                        ]),
-                      ),
-                      EntryField(
-                        controller: passwordController,
-                        label: ' ' + locale.password,
-                        // initialValue: '*  *  *  *  *',
-                        borderRadiusBottomLeft: Radius.circular(12),
-                        borderRadiusBottomRight: Radius.circular(12),
-                        validator: FormBuilderValidators.minLength(context, 5,
-                            errorText: "5 dights at least"),
-                      ),
-                      SizedBox(
-                        height: 8,
-                      ),
-                    ],
-                  )), //         ],
+                    )),
+              ), //         ],
               //       ),
               //     ),
               //   ],
@@ -133,7 +141,7 @@ class _SignUpUIState extends State<SignUpUI> {
                       color: Colors.white12,
                       child: Center(
                         child: CircularProgressIndicator.adaptive(
-                          backgroundColor: Colors.green,
+                          backgroundColor: Colors.blue,
                           valueColor:
                               AlwaysStoppedAnimation<Color>(Colors.white),
                         ),
@@ -169,11 +177,14 @@ class _SignUpUIState extends State<SignUpUI> {
                       locale.alreadyRegistered + '? ',
                       style: theme.textTheme.bodyText1,
                     ),
-                    Text(
-                      locale.signIn.toLowerCase(),
-                      style: theme.textTheme.bodyText2.copyWith(
-                          color: theme.primaryColor,
-                          fontWeight: FontWeight.bold),
+                    GestureDetector(
+                      onTap: ()=> Get.to(()=> SignInUI()),
+                      child: Text(
+                        locale.signIn.toLowerCase(),
+                        style: theme.textTheme.bodyText2.copyWith(
+                            color: theme.primaryColor,
+                            fontWeight: FontWeight.bold),
+                      ),
                     ),
                   ],
                 ),

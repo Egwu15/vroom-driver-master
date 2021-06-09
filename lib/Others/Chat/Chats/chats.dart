@@ -23,6 +23,7 @@ class ListOfDrivers {
 
 int myID = 0;
 int otherId = 0;
+String pushToken = "";
 
 class _ChatsState extends State<Chats> {
   @override
@@ -93,6 +94,7 @@ class _ChatsState extends State<Chats> {
                       ListTile(
                         onTap: () {
                           otherId = doc['id'];
+                          pushToken = doc['pushToken'];
                           Get.to(() => ChatConversation());
                         },
                         contentPadding:

@@ -255,7 +255,7 @@ class _RideRequestsState extends State<RideRequests> {
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Text(
-                                  '\$' + _informationOfRides[index].price,
+                                  '\N' + _informationOfRides[index].price,
                                   style: theme.textTheme.bodyText2.copyWith(
                                       fontWeight: FontWeight.w500,
                                       height: 2.2,

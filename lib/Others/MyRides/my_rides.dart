@@ -164,7 +164,7 @@ class _MyRidesState extends State<MyRides> {
                                         )),
                                     Spacer(),
                                     Text(
-                                      '\$ ' + _informationOfRides[index].price,
+                                      '\N ' + _informationOfRides[index].price,
                                       style: theme.textTheme.bodyText1.copyWith(
                                           fontWeight: FontWeight.w700,
                                           color: theme.primaryColor),
@@ -348,7 +348,7 @@ class _MyRidesState extends State<MyRides> {
                                         )),
                                     Spacer(),
                                     Text(
-                                      '\$ ' + _informationOfRides[index].price,
+                                      '\N ' + _informationOfRides[index].price,
                                       style: theme.textTheme.bodyText1.copyWith(
                                           fontWeight: FontWeight.w700,
                                           color: theme.primaryColor),

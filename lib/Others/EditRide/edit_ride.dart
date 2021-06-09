@@ -533,7 +533,7 @@ class _EditRideState extends State<EditRide> {
                         width: 20,
                       ),
                       Text(
-                        '\$ 3',
+                        '\N 3',
                         style: theme.textTheme.headline6.copyWith(
                           fontSize: 32,
                         ),

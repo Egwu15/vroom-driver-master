@@ -54,7 +54,7 @@ class _FareRateState extends State<FareRate> {
                     height: 20,
                   ),
                   Text(
-                    '\$ 120',
+                    '\N 120',
                     style: theme.textTheme.subtitle2.copyWith(
                       color: theme.primaryColor,
                       fontSize: 34,

@@ -32,35 +32,35 @@ class _WalletState extends State<Wallet> {
           'assets/ProfileImages/man5.png',
           locale.ridePayment,
           'Washington Sq Park to East Newark',
-          '\$120',
+          '\N120',
           'David Johnson',
           '9th Feb, 05:15 pm'),
       ListOfPayments(
           'assets/ProfileImages/man2.png',
           locale.ridePayment,
           'Washington Sq Park to East Newark',
-          '\$60',
+          '\N60',
           'Remmy Hemilton',
           '19th Feb, 09:15 pm'),
       ListOfPayments(
           'assets/ProfileImages/women 1.png',
           locale.ridePayment,
           'Washington Sq Park to East Newark',
-          '\$60',
+          '\N60',
           'Emili Watson',
           '12th March, 05:15 pm'),
       ListOfPayments(
           'assets/appIcon.png',
           locale.addedToBank,
           'Washington Sq Park to East Newark',
-          '\$10',
+          '\N10',
           'Wallet',
           '9th Feb, 05:15 pm'),
       ListOfPayments(
           'assets/ProfileImages/man3.png',
           locale.ridePayment,
           'Washington Sq Park to East Newark',
-          '\$60',
+          '\N60',
           'Raun Watson',
           '8th March, 12:15 pm'),
     ];
@@ -97,7 +97,7 @@ class _WalletState extends State<Wallet> {
                     ),
                     Center(
                       child: Text(
-                        '\$ 120',
+                        '\N 120',
                         style: theme.textTheme.headline6
                             .copyWith(fontSize: 45, letterSpacing: 2),
                       ),
