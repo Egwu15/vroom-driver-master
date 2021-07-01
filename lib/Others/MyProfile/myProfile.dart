@@ -1,11 +1,16 @@
 import 'package:animation_wrappers/animation_wrappers.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/route_manager.dart';
+import 'package:vroom_driver/Components/circularImage.dart';
 import 'package:vroom_driver/Components/entryFieldForProfile.dart';
+import 'package:vroom_driver/Components/upload_dialog.dart';
 import 'package:vroom_driver/Locale/locales.dart';
 import 'package:vroom_driver/Routes/routes.dart';
 import 'package:vroom_driver/Theme/colors.dart';
 import 'package:vroom_driver/apis/hiveStorage.dart';
+
+import '../VerifyMyID/userVerification.dart';
 
 class MyProfile extends StatefulWidget {
   @override
@@ -21,16 +26,16 @@ class Reviews {
 }
 
 class _MyProfileState extends State<MyProfile> {
-
-    bool _isloading = false;
+  bool _isloading = false;
   String name = "";
   String email = '';
   HiveCalls hiveCalls = HiveCalls();
- String activeWith = '';
- String phoneNumber = '';
- String profilePic = '';
+  String activeWith = '';
+  String phoneNumber = '';
+  String profilePic = '';
+  String agentLevel = '';
 
- @override
+  @override
   void initState() {
     super.initState();
     getUserProperties();
@@ -42,7 +47,8 @@ class _MyProfileState extends State<MyProfile> {
     activeWith = await hiveCalls.getActiveWith();
     phoneNumber = await hiveCalls.getPhoneNumber();
     profilePic = await hiveCalls.getProfilePhoto();
-    print(profilePic);
+    agentLevel = await hiveCalls.getAgentLevel();
+    print(agentLevel);
     setState(() {});
   }
 
@@ -77,15 +83,23 @@ class _MyProfileState extends State<MyProfile> {
               padding: const EdgeInsets.all(16.0),
               child: Row(
                 children: [
-                  CircleAvatar(
-                    radius: 34,
-                    child: Image.asset('assets/ProfileImages/man1.png',
-                        fit: BoxFit.fill),
+                  GestureDetector(
+                    onTap: () => selectProfilePic(),
+                    child: circularImage(profilePic, 70.0),
+                    // Container(
+                    //   height:70,
+                    //   width: 70,
+                    //   decoration: BoxDecoration(
+                    //       shape: BoxShape.circle,
+                    //       image: DecorationImage(
+                    //         image: NetworkImage(profilePic),
+                    //       )),
+                    // ),
                   ),
                   Column(
                     children: [
                       Padding(
-                      padding: const EdgeInsets.only(left: 20.0),
+                        padding: const EdgeInsets.only(left: 20.0),
                         child: Text(
                           name,
                           style: theme.textTheme.bodyText1.copyWith(
@@ -178,9 +192,11 @@ class _MyProfileState extends State<MyProfile> {
                           ),
                         ),
                         EntryFieldForProfile(
-                          label:locale.emailAddress,
-                          hintText: email ,
-                           hintStyle: TextStyle(color: Colors.black,),
+                          label: locale.emailAddress,
+                          hintText: email,
+                          hintStyle: TextStyle(
+                            color: Colors.black,
+                          ),
                           initialValue: email,
                           padding: EdgeInsets.symmetric(horizontal: 16),
                           readOnly: true,
@@ -214,8 +230,11 @@ class _MyProfileState extends State<MyProfile> {
                                 padding: const EdgeInsets.only(left: 16.0),
                                 label: locale.phoneVerification,
                                 initialValue: phoneNumber,
+                                readOnly: true,
                                 hintText: phoneNumber,
-                                 hintStyle: TextStyle(color: Colors.black,),
+                                hintStyle: TextStyle(
+                                  color: Colors.black,
+                                ),
                               ),
                             ),
                             Icon(
@@ -238,8 +257,11 @@ class _MyProfileState extends State<MyProfile> {
                                 padding: const EdgeInsets.only(left: 16.0),
                                 label: 'Active with',
                                 initialValue: activeWith,
+                                readOnly: true,
                                 hintText: activeWith,
-                                 hintStyle: TextStyle(color: Colors.black,),
+                                hintStyle: TextStyle(
+                                  color: Colors.black,
+                                ),
                               ),
                             ),
                             Icon(
@@ -252,6 +274,44 @@ class _MyProfileState extends State<MyProfile> {
                             ),
                           ],
                         ),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: EntryFieldForProfile(
+                                padding: const EdgeInsets.only(left: 16.0),
+                                label: 'Verification',
+                                initialValue: agentLevel,
+                                readOnly: true,
+                                hintText: agentLevel,
+                                hintStyle: TextStyle(
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ),
+                            Icon(
+                              Icons.check_circle,
+                              size: 16,
+                              color: theme.primaryColor,
+                            ),
+                            SizedBox(
+                              width: 20,
+                            ),
+                          ],
+                        ),
+                        if(agentLevel == 'unverified')
+                         TextButton(
+                                style: ButtonStyle(
+                                    padding: MaterialStateProperty.all(
+                                        EdgeInsets.all(0))),
+                                onPressed: ()=> Get.to(()=>UserVerification()),
+                                child: Text(
+                                  'Verify user',
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                  ),
+                                ),
+                              ),
+                              Divider(height: 20, color: Colors.black45),
                         // Container(
                         //   width: double.infinity,
                         //   height: 6,
@@ -346,17 +406,17 @@ class _MyProfileState extends State<MyProfile> {
                         //   height: 6,
                         //   color: Color(0xffE7EAEC),
                         // ),
-                        Container(
-                          height: 50,
-                          width: MediaQuery.of(context).size.width * 0.50,
-                          color: theme.primaryColor,
-                          child: Center(
-                            child: Text(
-                              locale.updateInfo,
-                              style: theme.textTheme.headline6,
-                            ),
-                          ),
-                        ),
+                        // Container(
+                        //   height: 50,
+                        //   width: MediaQuery.of(context).size.width * 0.50,
+                        //   color: theme.primaryColor,
+                        //   child: Center(
+                        //     child: Text(
+                        //       locale.updateInfo,
+                        //       style: theme.textTheme.headline6,
+                        //     ),
+                        //   ),
+                        // ),
                       ],
                     ),
                     beginOffset: Offset(0, 0.3),

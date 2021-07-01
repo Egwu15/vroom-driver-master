@@ -12,6 +12,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'Auth/SignIn/sign_in.dart';
 import 'Locale/Languages/language_cubit.dart';
 import 'Locale/locales.dart';
+import 'Others/introductionScreen.dart';
 import 'Routes/routes.dart';
 import 'Theme/styles.dart';
 import 'package:hive/hive.dart';
@@ -98,7 +99,7 @@ class VroomDriver extends StatelessWidget {
         ],
         locale: locale,
         theme: appTheme,
-        home: SignInUI(),
+        home: OnBoardingPage(),
         routes: PageRoutes().routes(),
       );
     });

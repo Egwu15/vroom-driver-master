@@ -4,9 +4,12 @@ import 'package:animation_wrappers/animation_wrappers.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/route_manager.dart';
 import 'package:vroom_driver/Components/entryField.dart';
 import 'package:vroom_driver/Components/snackBar.dart';
+import 'package:vroom_driver/Others/Quotation/quotationSucess.dart';
 import 'package:vroom_driver/apis/authCall.dart';
+import 'package:vroom_driver/apis/pushNotification.dart';
 
 class ReferNow extends StatefulWidget {
   @override
@@ -39,6 +42,7 @@ class _ReferNowState extends State<ReferNow> {
     var theme = Theme.of(context);
 
     return Scaffold(
+      
       body: FadedSlideAnimation(
         SingleChildScrollView(
           child: _isLoading
@@ -169,12 +173,11 @@ class _ReferNowState extends State<ReferNow> {
                                 setState(() {
                                   _isLoading = true;
                                 });
-                                
+
                                 if (file != null) {
                                   setQuotation(
                                           file, amountTextController.value.text)
                                       .then((_) => setState(() {
-                                        
                                             _isLoading = false;
                                           }));
                                 } else {

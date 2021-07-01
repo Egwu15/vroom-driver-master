@@ -1,9 +1,14 @@
 import 'package:animation_wrappers/animation_wrappers.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
+import 'package:get/instance_manager.dart';
 import 'package:vroom_driver/Components/custom_button.dart';
 import 'package:vroom_driver/Locale/locales.dart';
+import 'package:vroom_driver/Others/Wallet/withdraw.dart';
 import 'package:vroom_driver/Routes/routes.dart';
 import 'package:vroom_driver/Theme/colors.dart';
+import 'package:vroom_driver/apis/walletController.dart';
+import 'package:get/route_manager.dart';
 
 class Wallet extends StatefulWidget {
   @override
@@ -24,7 +29,14 @@ class ListOfPayments {
 
 class _WalletState extends State<Wallet> {
   @override
+  void initState() {
+    super.initState();
+    getWallet();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    WalletController walletController = Get.find();
     var theme = Theme.of(context);
     var locale = AppLocalizations.of(context);
     List<ListOfPayments> _listOfPayments = [
@@ -96,10 +108,12 @@ class _WalletState extends State<Wallet> {
                       ),
                     ),
                     Center(
-                      child: Text(
-                        '\N 120',
-                        style: theme.textTheme.headline6
-                            .copyWith(fontSize: 45, letterSpacing: 2),
+                      child: Obx(
+                        () => Text(
+                          '\N ${walletController.balance}',
+                          style: theme.textTheme.headline6
+                              .copyWith(fontSize: 45, letterSpacing: 2),
+                        ),
                       ),
                     ),
                     Spacer(),
@@ -116,7 +130,8 @@ class _WalletState extends State<Wallet> {
                         Expanded(
                             child: CustomButton(
                           onTap: () {
-                            Navigator.pushNamed(context, PageRoutes.sendToBank);
+                            // Navigator.pushNamed(context, PageRoutes.sendToBank);
+                            Get.to(()=> WithdrawPage());
                           },
                           label: locale.sendToBank,
                           height: 40,
@@ -143,82 +158,82 @@ class _WalletState extends State<Wallet> {
                         height: 4,
                         color: Color(0xffE7EAEC),
                       ),
-                      ListView.builder(
-                        physics: NeverScrollableScrollPhysics(),
-                        padding: EdgeInsets.zero,
-                        itemCount: _listOfPayments.length,
-                        shrinkWrap: true,
-                        itemBuilder: (context, index) {
-                          return Column(
-                            children: [
-                              ListTile(
-                                contentPadding: EdgeInsets.symmetric(
-                                    vertical: 8, horizontal: 16),
-                                leading: CircleAvatar(
-                                  radius: 24,
-                                  child: ClipRRect(
-                                    child: Image.asset(
-                                        _listOfPayments[index].image,
-                                        fit: BoxFit.fill),
-                                    borderRadius: BorderRadius.circular(24),
-                                  ),
-                                ),
-                                title: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        Text(_listOfPayments[index].title,
-                                            style: theme.textTheme.bodyText2
-                                                .copyWith(
-                                              fontWeight: FontWeight.w500,
-                                              fontSize: 14,
-                                            )),
-                                        Spacer(),
-                                        Text(
-                                          _listOfPayments[index].money,
-                                          style: theme.textTheme.subtitle2
-                                              .copyWith(
-                                                  fontSize: 14,
-                                                  color: theme.primaryColor),
-                                        ),
-                                      ],
-                                    ),
-                                    Text(
-                                      _listOfPayments[index].date,
-                                      style: theme.textTheme.subtitle2
-                                          .copyWith(fontSize: 8),
-                                    ),
-                                    SizedBox(height: 5),
-                                    Row(
-                                      children: [
-                                        Text(
-                                          _listOfPayments[index].subtitle,
-                                          style: theme.textTheme.bodyText2
-                                              .copyWith(
-                                                  color: hintTextColor,
-                                                  fontSize: 9),
-                                        ),
-                                        Spacer(),
-                                        Text(
-                                          _listOfPayments[index].name,
-                                          style: theme.textTheme.bodyText2
-                                              .copyWith(fontSize: 10),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Container(
-                                width: double.infinity,
-                                height: 4,
-                                color: Color(0xffE7EAEC),
-                              ),
-                            ],
-                          );
-                        },
-                      ),
+                      // ListView.builder(
+                      //   physics: NeverScrollableScrollPhysics(),
+                      //   padding: EdgeInsets.zero,
+                      //   itemCount: _listOfPayments.length,
+                      //   shrinkWrap: true,
+                      //   itemBuilder: (context, index) {
+                      //     return Column(
+                      //       children: [
+                      //         ListTile(
+                      //           contentPadding: EdgeInsets.symmetric(
+                      //               vertical: 8, horizontal: 16),
+                      //           leading: CircleAvatar(
+                      //             radius: 24,
+                      //             child: ClipRRect(
+                      //               child: Image.asset(
+                      //                   _listOfPayments[index].image,
+                      //                   fit: BoxFit.fill),
+                      //               borderRadius: BorderRadius.circular(24),
+                      //             ),
+                      //           ),
+                      //           title: Column(
+                      //             crossAxisAlignment: CrossAxisAlignment.start,
+                      //             children: [
+                      //               Row(
+                      //                 children: [
+                      //                   Text(_listOfPayments[index].title,
+                      //                       style: theme.textTheme.bodyText2
+                      //                           .copyWith(
+                      //                         fontWeight: FontWeight.w500,
+                      //                         fontSize: 14,
+                      //                       )),
+                      //                   Spacer(),
+                      //                   Text(
+                      //                     _listOfPayments[index].money,
+                      //                     style: theme.textTheme.subtitle2
+                      //                         .copyWith(
+                      //                             fontSize: 14,
+                      //                             color: theme.primaryColor),
+                      //                   ),
+                      //                 ],
+                      //               ),
+                      //               Text(
+                      //                 _listOfPayments[index].date,
+                      //                 style: theme.textTheme.subtitle2
+                      //                     .copyWith(fontSize: 8),
+                      //               ),
+                      //               SizedBox(height: 5),
+                      //               Row(
+                      //                 children: [
+                      //                   Text(
+                      //                     _listOfPayments[index].subtitle,
+                      //                     style: theme.textTheme.bodyText2
+                      //                         .copyWith(
+                      //                             color: hintTextColor,
+                      //                             fontSize: 9),
+                      //                   ),
+                      //                   Spacer(),
+                      //                   Text(
+                      //                     _listOfPayments[index].name,
+                      //                     style: theme.textTheme.bodyText2
+                      //                         .copyWith(fontSize: 10),
+                      //                   ),
+                      //                 ],
+                      //               ),
+                      //             ],
+                      //           ),
+                      //         ),
+                      //         Container(
+                      //           width: double.infinity,
+                      //           height: 4,
+                      //           color: Color(0xffE7EAEC),
+                      //         ),
+                      //       ],
+                      //     );
+                      //   },
+                      // ),
                     ],
                   ),
                 ),

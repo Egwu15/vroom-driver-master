@@ -5,12 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:vroom_driver/Locale/locales.dart';
 import 'package:vroom_driver/Others/Chat/Chats/chats.dart';
-import 'package:vroom_driver/Others/More/more.dart';
+import 'package:vroom_driver/Others/Me/me.dart';
 import 'package:vroom_driver/Others/MyRides/my_rides.dart';
 import 'package:vroom_driver/Others/RideRequests/ride_requests.dart';
 import 'package:vroom_driver/Others/Wallet/wallet.dart';
 import 'package:http/http.dart' as http;
 import 'package:vroom_driver/apis/authCall.dart';
+import 'package:vroom_driver/apis/onlinePresence.dart';
 
 import '../main.dart';
 
@@ -22,13 +23,13 @@ class AppNavigation extends StatefulWidget {
 class _AppNavigationState extends State<AppNavigation> {
   int _currentIndex = 0;
   String token;
-
+  Database database = Database();
   final List<Widget> _children = [
     Chats(),
-    MyRides(),
-    RideRequests(),
+    // MyRides(),
+    // RideRequests(),
     Wallet(),
-    More(),
+    Me(),
   ];
 
   setToken() async {
@@ -36,10 +37,19 @@ class _AppNavigationState extends State<AppNavigation> {
     print("token $token");
   }
 
+/*
+
+
+ 
+
+
+    
+ */
+
   @override
   void initState() {
     super.initState();
-
+    database.updateUserPresence();
     setToken();
 
     FirebaseMessaging.instance
@@ -92,18 +102,18 @@ class _AppNavigationState extends State<AppNavigation> {
         ),
         label: locale.chats,
       ),
-      BottomNavigationBarItem(
-        icon: Icon(
-          Icons.directions_car_sharp,
-        ),
-        label: locale.passengers,
-      ),
-      BottomNavigationBarItem(
-        icon: Icon(
-          Icons.group_add,
-        ),
-        label: locale.rideRequests,
-      ),
+      // BottomNavigationBarItem(
+      //   icon: Icon(
+      //     Icons.history,
+      //   ),
+      //   label: "Chat History",
+      // ),
+      // BottomNavigationBarItem(
+      //   icon: Icon(
+      //     Icons.group_add,
+      //   ),
+      //   label: locale.rideRequests,
+      // ),
       BottomNavigationBarItem(
         icon: Icon(
           Icons.account_balance_wallet_rounded,
@@ -114,20 +124,20 @@ class _AppNavigationState extends State<AppNavigation> {
         icon: Icon(
           Icons.person,
         ),
-        label: locale.more,
+        label: "Me",
       ),
     ];
     return WillPopScope(
       onWillPop: () async => showDialog(
         context: context,
         builder: (context) => AlertDialog(
-          titleTextStyle: TextStyle(color: Colors.black, fontSize: 16.0),
+            titleTextStyle: TextStyle(color: Colors.black, fontSize: 16.0),
             title: Text('Are you sure you want to quit?'),
             actions: <Widget>[
               TextButton(
                   child: Text('sign out'),
                   onPressed: () => Navigator.of(context).pop(true)),
-               TextButton(
+              TextButton(
                   child: Text('cancel'),
                   onPressed: () => Navigator.of(context).pop(false)),
             ]),

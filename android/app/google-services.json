@@ -1,10 +1,40 @@
 {
   "project_info": {
     "project_number": "846598644441",
+    "firebase_url": "https://tugent-8e24e-default-rtdb.firebaseio.com",
     "project_id": "tugent-8e24e",
     "storage_bucket": "tugent-8e24e.appspot.com"
   },
   "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:846598644441:android:96f3ee17b7b6d0641094c8",
+        "android_client_info": {
+          "package_name": "com.example.turgent"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "846598644441-bl572l41l001qtcp5khf9gedt6f53k7b.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDIcKI9Y5Cmo8WqbW9TgzCWkySEqmsMJXs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "846598644441-bl572l41l001qtcp5khf9gedt6f53k7b.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
     {
       "client_info": {
         "mobilesdk_app_id": "1:846598644441:android:75ae0e23d265040b1094c8",

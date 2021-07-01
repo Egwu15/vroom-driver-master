@@ -31,6 +31,12 @@ dependencies:
   firebase_messaging: ^10.0.0
   file_picker: ^3.0.1
   flutter_local_notifications: ^5.0.0+4
+  flutter_uploader: ^1.2.1
+  image_picker: ^0.7.5
+  introduction_screen: ^2.1.0
+  google_fonts: ^2.1.0
+  pin_code_fields: ^7.2.0
+  firebase_database: ^7.1.1
 
 dev_dependencies:
   flutter_test:

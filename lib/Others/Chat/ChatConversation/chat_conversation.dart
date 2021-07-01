@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/route_manager.dart';
 import 'package:intl/intl.dart';
+import 'package:vroom_driver/Components/circularImage.dart';
 import 'package:vroom_driver/Locale/locales.dart';
 import 'package:vroom_driver/Others/Chat/Chats/chats.dart';
 import 'package:vroom_driver/Others/Quotation/Quotation.dart';
@@ -135,16 +136,13 @@ class _ChatConversationState extends State<ChatConversation> {
             SizedBox(
               width: 10,
             ),
-            CircleAvatar(
-              radius: 20,
-              child: Image.asset('assets/ProfileImages/man5.png',
-                  fit: BoxFit.fill),
-            ),
+            circularImage(
+                "https://tugent.tbmholdingltd.com/images/$userName.png", 40.0),
             SizedBox(
               width: 20,
             ),
             Text(
-              'David Johnson',
+              userName,
               style: theme.textTheme.headline6,
             ),
           ],
@@ -334,7 +332,7 @@ class MessageBubble extends StatelessWidget {
                 crossAxisAlignment:
                     isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
                 children: <Widget>[
-                  Text(
+                  SelectableText(
                     text,
                     style: isMe
                         ? Theme.of(context)

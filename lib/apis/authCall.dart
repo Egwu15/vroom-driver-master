@@ -5,10 +5,12 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:get/route_manager.dart';
 import 'package:http/http.dart' as http;
 import 'package:vroom_driver/AppNavigation/app_navigation.dart';
+import 'package:vroom_driver/Auth/Verification/otp.dart';
 import 'package:vroom_driver/Components/snackBar.dart';
 import 'package:vroom_driver/Others/Quotation/quotationSucess.dart';
 import 'package:vroom_driver/apis/fireStoreDB.dart';
 import 'package:vroom_driver/apis/hiveStorage.dart';
+import 'package:vroom_driver/apis/pushNotification.dart';
 import 'package:vroom_driver/models/tokenModel.dart';
 import 'package:vroom_driver/models/userModel.dart';
 import 'package:vroom_driver/models/userRegModel.dart';
@@ -40,7 +42,7 @@ signUp({email, password, name, phoneNumber}) async {
 
       await CloudDB()
           .setUserDetails(userid: await hiveCalls.getUserId(), name: name);
-      Get.offAll(() => AppNavigation());
+      Get.offAll(() => OtpPage());
     } else if (response.statusCode == 422) {
       showCustomSnackBar('email is already used');
     } else {
@@ -71,7 +73,12 @@ signIn({email, password}) async {
         );
       });
     } else if (response.statusCode == 401) {
-      showCustomSnackBar('Wrong username or password');
+      if (jsonDecode(response.body)['error'] ==
+          "Email Verification is important ") {
+        showCustomSnackBar('Unverified account!');
+      } else {
+        showCustomSnackBar('Wrong username or password');
+      }
     } else {
       showCustomSnackBar('Please check your network and try again');
     }
@@ -90,12 +97,13 @@ getUserDetails(token) async {
     });
     print("statuscode: ${response.body}");
     if (response.statusCode == 201) {
-     var userId = userModelFromJson(response.body).data.id;
+      var userId = userModelFromJson(response.body).data.id;
       var userName = userModelFromJson(response.body).data.name;
       var userEmail = userModelFromJson(response.body).data.email;
       var picture = userModelFromJson(response.body).data.avater;
       var active = userModelFromJson(response.body).data.activewithUser;
       var phoneNumber = userModelFromJson(response.body).data.phoneNumber;
+      var agentLevel = userModelFromJson(response.body).data.agentLevel;
       print("userid: $userId");
       await hiveCalls.addUserId(userId);
       await createPushToken(userId);
@@ -104,6 +112,7 @@ getUserDetails(token) async {
       await hiveCalls.addProfilePhoto(picture);
       await hiveCalls.addActiveWith(active);
       await hiveCalls.addPhoneNumber(phoneNumber);
+      await hiveCalls.addAgentLevel(agentLevel);
       // print('object');
       //   Get.to(
       //     () => AppNavigation(),
@@ -128,8 +137,10 @@ setQuotation(File rawFile, amount) async {
     );
     request.headers['authorization'] = 'Bearer $token';
     request.fields['amount'] = amount;
-    request.files.add(new http.MultipartFile('attachment',
-        File(rawFile.path).readAsBytes().asStream(), File(rawFile.path).lengthSync(),
+    request.files.add(new http.MultipartFile(
+        'attachment',
+        File(rawFile.path).readAsBytes().asStream(),
+        File(rawFile.path).lengthSync(),
         filename: rawFile.path.split("/").last));
 
     // var response = await http.post(url, headers: {
@@ -141,20 +152,21 @@ setQuotation(File rawFile, amount) async {
     //   "attachment": fileData
     // });
 
-   await request.send().then((response) async {
+    await request.send().then((response) async {
       print("statuscode: ${response.statusCode}");
       var rb = await response.stream.bytesToString();
       print("resBody: $rb");
 
-      if (response.statusCode == 201) {
+      if (response.statusCode == 201 || response.statusCode == 200) {
         // print("userid: ${userModelFromJson(response.body).data.id}");
         // await hiveCalls.addUserId(userModelFromJson(response.body).data.id);
         // // print('object');
         //   Get.to(
         //     () => AppNavigation(),
         // );
-        
-        Get.to(()=>QuotstionSucess());
+        sendPushMessage();
+        Get.back();
+        showCustomSnackBar("Quotation Sent!");
       } else if (response.statusCode == 401) {
         showCustomSnackBar('amount is about 100,000');
       } else

@@ -2,11 +2,16 @@ import 'package:animation_wrappers/animation_wrappers.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/route_manager.dart';
+import 'package:http/http.dart';
+import 'package:vroom_driver/Components/circularImage.dart';
 import 'package:vroom_driver/Locale/locales.dart';
 import 'package:vroom_driver/Others/Chat/ChatConversation/chat_conversation.dart';
 import 'package:vroom_driver/Routes/routes.dart';
 import 'package:vroom_driver/Theme/colors.dart';
 import 'package:vroom_driver/apis/hiveStorage.dart';
+
+import 'package:get/instance_manager.dart';
+import 'package:vroom_driver/apis/pushNotification.dart';
 
 class Chats extends StatefulWidget {
   @override
@@ -24,6 +29,7 @@ class ListOfDrivers {
 int myID = 0;
 int otherId = 0;
 String pushToken = "";
+String userName = '';
 
 class _ChatsState extends State<Chats> {
   @override
@@ -40,7 +46,9 @@ class _ChatsState extends State<Chats> {
 
   @override
   Widget build(BuildContext context) {
+    PushController pushController = Get.put(PushController());
     var locale = AppLocalizations.of(context);
+
     List<ListOfDrivers> _listOfDrivers = [
       ListOfDrivers('assets/ProfileImages/man1.png', 'David Johnson',
           'Washington Sq Park?'),
@@ -76,9 +84,32 @@ class _ChatsState extends State<Chats> {
               // .where('isLoggedIn', isEqualTo: true)
               // .where('isAgent', isEqualTo: false)
               .where('chatted', arrayContains: myID)
+              // where("uid", whereIn:  [2,2,3,4,3])
               .snapshots(),
           builder: (context, snapshot) {
             if (snapshot.hasData && snapshot.data != null) {
+              if (snapshot.data.docs.length == 0) {
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Image.asset(
+                        "assets/sadFace.png",
+                      ),
+                      Text(
+                        'No Message',
+                        style: TextStyle(
+                            fontSize: 22.0, fontWeight: FontWeight.w600),
+                      ),
+                      SizedBox(
+                        height: 5.0,
+                      ),
+                      Text("No user has message you yet")
+                    ],
+                  ),
+                );
+              }
               return ListView.builder(
                 itemCount: snapshot.data.docs.length,
                 shrinkWrap: true,
@@ -95,15 +126,46 @@ class _ChatsState extends State<Chats> {
                         onTap: () {
                           otherId = doc['id'];
                           pushToken = doc['pushToken'];
+                          pushController.pushToken.value = doc['pushToken'];
+                          userName = doc['name'];
                           Get.to(() => ChatConversation());
                         },
                         contentPadding:
                             EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                        leading: CircleAvatar(
-                          radius: 24,
-                          child: Image.asset(_listOfDrivers[index].image,
-                              fit: BoxFit.fill),
-                        ),
+                        leading: circularImage(
+                            "https://tugent.tbmholdingltd.com/images/${doc['name']}.png",
+                            50.0),
+                        //  CircleAvatar(
+                        //   radius: 24,
+                        //   child: Image.network(
+
+                        //       "https://tugent.tbmholdingltd.com/images/avaters/dummy.jpg",
+                        //       loadingBuilder: ,
+                        //       fit: BoxFit.fill),
+                        // ),
+                        //   DecoratedBox(
+                        // decoration: BoxDecoration(
+                        //   color: Colors.white,
+                        //   border: Border.all(),
+                        //   borderRadius: BorderRadius.circular(40),
+                        // ),
+                        // child: Image.network(
+                        //   'https://tugent.tbmholdingltd.com/images/davaters/dummy.jpg',
+                        //   loadingBuilder: (BuildContext context, Widget child,
+                        //       ImageChunkEvent loadingProgress) {
+                        //     if (loadingProgress == null) return Icon(Icons.ac_unit);
+                        //     return Center(
+                        //       child: CircularProgressIndicator(
+                        //         value: loadingProgress.expectedTotalBytes !=
+                        //                 null
+                        //             ? loadingProgress.cumulativeBytesLoaded /
+                        //                 loadingProgress.expectedTotalBytes
+                        //             : null,
+                        //       ),
+                        //     );
+                        //   },
+                        // ),
+                        // ),
                         title: Row(
                           children: [
                             Text(doc['name'],
@@ -124,18 +186,18 @@ class _ChatsState extends State<Chats> {
                               backgroundColor: theme.primaryColor,
                             ),
                             Spacer(),
-                            Text(
-                              'June 22, 11:30 am',
-                              style: theme.textTheme.subtitle2
-                                  .copyWith(fontSize: 8),
-                            ),
+                            // Text(
+                            //   'June 22, 11:30 am',
+                            //   style: theme.textTheme.subtitle2
+                            //       .copyWith(fontSize: 8),
+                            // ),
                           ],
                         ),
-                        subtitle: Text(
-                          _listOfDrivers[index].subtitle,
-                          style: theme.textTheme.bodyText2
-                              .copyWith(color: hintTextColor, fontSize: 10),
-                        ),
+                        // subtitle: Text(
+                        //   _listOfDrivers[index].subtitle,
+                        //   style: theme.textTheme.bodyText2
+                        //       .copyWith(color: hintTextColor, fontSize: 10),
+                        // ),
                       ),
                       Container(
                         width: double.infinity,

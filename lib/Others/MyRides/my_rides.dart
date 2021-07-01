@@ -112,7 +112,7 @@ class _MyRidesState extends State<MyRides> {
       child: Scaffold(
         appBar: AppBar(
           title: Text(
-            'Passenger'.toUpperCase(),
+            'chat history'.toUpperCase(),
             style: theme.textTheme.headline6,
           ),
           centerTitle: true,

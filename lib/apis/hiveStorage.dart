@@ -10,6 +10,8 @@ class HiveCalls {
   static const HIVE_PUSH_TOkEN = 'PushToken';
   static const HIVE_ACTIVE = 'activeWith';
   static const HIVE_PHONE_NUMBER = 'phoneNumber';
+  static const HIVE_AGENT_LEVEL = 'agentLevel';
+
 
   initHiveDb() async {
     box = await Hive.openBox('box');
@@ -99,5 +101,15 @@ class HiveCalls {
   getPhoneNumber() async {
     await initHiveDb();
     return box.get(HIVE_PHONE_NUMBER);
+  }
+  addAgentLevel(agentLevel) async {
+    await initHiveDb();
+    await box.put(HIVE_AGENT_LEVEL, agentLevel);
+    print("agentLevel: $agentLevel");
+  }
+
+  getAgentLevel() async {
+    await initHiveDb();
+    return box.get(HIVE_AGENT_LEVEL);
   }
 }

@@ -2,16 +2,23 @@ import 'package:animation_wrappers/animation_wrappers.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
+import 'package:get/route_manager.dart';
+import 'package:vroom_driver/Auth/loginPage.dart';
+import 'package:vroom_driver/Components/circularImage.dart';
 import 'package:vroom_driver/Components/custom_button.dart';
 import 'package:vroom_driver/Locale/locales.dart';
+import 'package:vroom_driver/Others/Quotation/orderStatus.dart';
+import 'package:vroom_driver/Others/Wallet/invoice.dart';
+import 'package:vroom_driver/Others/Wallet/loan.dart';
+import 'package:vroom_driver/Others/Wallet/payLoan.dart';
 import 'package:vroom_driver/Routes/routes.dart';
 import 'package:vroom_driver/Theme/colors.dart';
 import 'package:vroom_driver/apis/fireStoreDB.dart';
 import 'package:vroom_driver/apis/hiveStorage.dart';
 
-class More extends StatefulWidget {
+class Me extends StatefulWidget {
   @override
-  _MoreState createState() => _MoreState();
+  _MeState createState() => _MeState();
 }
 
 class AccountItems {
@@ -21,10 +28,11 @@ class AccountItems {
   AccountItems(this.title, this.icon);
 }
 
-class _MoreState extends State<More> {
+class _MeState extends State<Me> {
   int myId;
   String name = "";
   String email = "";
+  String profilePic = "";
   HiveCalls hiveCalls = HiveCalls();
   @override
   void initState() {
@@ -36,6 +44,7 @@ class _MoreState extends State<More> {
     myId = await hiveCalls.getUserId();
     name = await hiveCalls.getUserName();
     email = await hiveCalls.getUserEmail();
+    profilePic = await hiveCalls.getProfilePhoto();
     setState(() {});
   }
 
@@ -50,6 +59,38 @@ class _MoreState extends State<More> {
           FadedScaleAnimation(
             Icon(
               Icons.person,
+              color: theme.primaryColor,
+            ),
+          )),
+      AccountItems(
+          "Loan",
+          FadedScaleAnimation(
+            Icon(
+              Icons.money,
+              color: theme.primaryColor,
+            ),
+          )),
+      AccountItems(
+          "Pay loan",
+          FadedScaleAnimation(
+            Icon(
+              Icons.money_off_outlined,
+              color: theme.primaryColor,
+            ),
+          )),
+      AccountItems(
+          "Invoice",
+          FadedScaleAnimation(
+            Icon(
+              Icons.dashboard_customize,
+              color: theme.primaryColor,
+            ),
+          )),
+      AccountItems(
+          "Order status",
+          FadedScaleAnimation(
+            Icon(
+              Icons.online_prediction_rounded,
               color: theme.primaryColor,
             ),
           )),
@@ -99,7 +140,7 @@ class _MoreState extends State<More> {
         automaticallyImplyLeading: false,
         centerTitle: true,
         title: Text(
-          locale.more.toUpperCase(),
+          "me".toUpperCase(),
           style: theme.textTheme.headline6,
         ),
       ),
@@ -110,17 +151,22 @@ class _MoreState extends State<More> {
             child: Row(
               children: [
                 FadedScaleAnimation(
-                  CircleAvatar(
-                    radius: 34,
-                    child: Image.asset('assets/ProfileImages/man1.png',
-                        fit: BoxFit.fill),
-                  ),
+                  // Container(
+                  //   height: 70,
+                  //   width: 70,
+                  //   decoration: BoxDecoration(
+                  //       shape: BoxShape.circle,
+                  //       image: DecorationImage(
+                  //         image: NetworkImage(profilePic),
+                  //       )),
+                  // ),
+                  circularImage(profilePic, 70.0),
                 ),
-                Column(crossAxisAlignment: CrossAxisAlignment.start,
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    
                     Padding(
-                      padding: const EdgeInsets.only(left:20.0),
+                      padding: const EdgeInsets.only(left: 20.0),
                       child: Text(
                         name,
                         style: theme.textTheme.bodyText1.copyWith(
@@ -234,31 +280,53 @@ class _MoreState extends State<More> {
                       ? () {
                           Navigator.pushNamed(context, PageRoutes.myProfile);
                         }
-                      : index == 5
+                      : index == 1
                           ? () {
-                              Navigator.pushNamed(context, PageRoutes.help);
+                              Get.to(() => LoanPage());
                             }
                           : index == 2
                               ? () {
-                                  Navigator.pushNamed(
-                                      context, PageRoutes.termsAndConditions);
+                                  Get.to(() => PayLoanPage());
                                 }
                               : index == 3
                                   ? () {
-                                      Navigator.pushNamed(
-                                          context, PageRoutes.referNow);
+                                      Get.to(() => InvoicePage());
                                     }
-                                  : index == 1
+                              : index == 4
+                                  ? () {
+                                      Get.to(() => OrderStatus());
+                                    }
+                                  : index == 5
                                       ? () {
                                           Navigator.pushNamed(context,
                                               PageRoutes.notifications);
                                         }
                                       : index == 6
                                           ? () {
-                                              Navigator.pushNamed(context,
-                                                  PageRoutes.changeLanguage);
+                                              Navigator.pushNamed(
+                                                  context,
+                                                  PageRoutes
+                                                      .termsAndConditions);
                                             }
-                                          : () {},
+                                          : index == 7
+                                              ? () {
+                                                  Navigator.pushNamed(context,
+                                                      PageRoutes.referNow);
+                                                }
+                                              : index == 8
+                                                  ? () {
+                                                      Navigator.pushNamed(
+                                                          context,
+                                                          PageRoutes.help);
+                                                    }
+                                                  : index == 9
+                                                      ? () {
+                                                          Navigator.pushNamed(
+                                                              context,
+                                                              PageRoutes
+                                                                  .changeLanguage);
+                                                        }
+                                                      : () {},
                   leading: _accountItems[index].icon,
                   title: Text(
                     _accountItems[index].title,
@@ -275,7 +343,7 @@ class _MoreState extends State<More> {
           ),
           CustomButton(
             onTap: () {
-              Phoenix.rebirth(context);
+              Get.off(() => LoginPage());
             },
             bgColor: theme.scaffoldBackgroundColor,
             labelStyle: theme.textTheme.headline6.copyWith(
