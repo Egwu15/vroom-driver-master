@@ -19,6 +19,7 @@ HiveCalls hiveCalls = HiveCalls();
 String pushToken;
 Stream<String> _tokenStream;
 String baseUrl = "https://tugent.tbmholdingltd.com/api";
+int userId;
 
 setPushToken(tok, userId) async {
   await hiveCalls.addPushToken(tok);
@@ -42,6 +43,7 @@ signUp({email, password, name, phoneNumber}) async {
 
       await CloudDB()
           .setUserDetails(userid: await hiveCalls.getUserId(), name: name);
+          await createPushToken(userId);
       Get.offAll(() => OtpPage());
     } else if (response.statusCode == 422) {
       showCustomSnackBar('email is already used');
@@ -55,30 +57,30 @@ signUp({email, password, name, phoneNumber}) async {
 
 signIn({email, password}) async {
   try {
-    var url = Uri.parse('$baseUrl/login');
+    var url = Uri.parse('$baseUrl/login_agent');
     var response = await http.post(url, body: {
       'email': email,
       'password': password,
+      'agent':'agent'
     });
     print(response.body);
+    print(response.statusCode);
     if (response.statusCode == 200) {
       print((tokenModelFromJson(response.body).token));
-
-      await hiveCalls
-          .addUserToken(userRegisterdModelFromJson(response.body).token);
-
-      await getUserDetails(tokenModelFromJson(response.body).token).then((_) {
-        Get.offAll(
-          () => AppNavigation(),
-        );
-      });
-    } else if (response.statusCode == 401) {
-      if (jsonDecode(response.body)['error'] ==
-          "Email Verification is important ") {
-        showCustomSnackBar('Unverified account!');
+      if (jsonDecode(response.body)['status'] == "Please verify using Otp ") {
+        return showCustomSnackBar('Unverified account!'); 
       } else {
-        showCustomSnackBar('Wrong username or password');
+        await hiveCalls
+            .addUserToken(userRegisterdModelFromJson(response.body).token);
+
+        await getUserDetails(tokenModelFromJson(response.body).token).then((_) {
+          Get.offAll(
+            () => AppNavigation(),
+          );
+        });
       }
+    } else if (response.statusCode == 401) {
+      showCustomSnackBar('Wrong username or password');
     } else {
       showCustomSnackBar('Please check your network and try again');
     }
@@ -97,7 +99,7 @@ getUserDetails(token) async {
     });
     print("statuscode: ${response.body}");
     if (response.statusCode == 201) {
-      var userId = userModelFromJson(response.body).data.id;
+      userId = userModelFromJson(response.body).data.id;
       var userName = userModelFromJson(response.body).data.name;
       var userEmail = userModelFromJson(response.body).data.email;
       var picture = userModelFromJson(response.body).data.avater;
@@ -106,7 +108,7 @@ getUserDetails(token) async {
       var agentLevel = userModelFromJson(response.body).data.agentLevel;
       print("userid: $userId");
       await hiveCalls.addUserId(userId);
-      await createPushToken(userId);
+      
       await hiveCalls.addUserEmail(userEmail);
       await hiveCalls.addUserName(userName);
       await hiveCalls.addProfilePhoto(picture);

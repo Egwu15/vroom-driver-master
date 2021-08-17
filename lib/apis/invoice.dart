@@ -34,7 +34,7 @@ uploadInvoice(
       if (response.statusCode == 200) {
         print(jsonDecode(rb)['status']);
         if (jsonDecode(rb)['status']) {
-          Get.to(() => QuotstionSucess());
+          Get.to(() => QuotstionSucess(sucesstext: "Invoice sent!",));
         } else {
           showCustomSnackBar('check account number');
         }
