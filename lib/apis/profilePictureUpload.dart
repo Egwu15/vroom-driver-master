@@ -25,7 +25,7 @@ Future getImageFromGallary() async {
 
 uploadProfilePic(_image) async {
   var userToken = await HiveCalls().getUserToken();
-  
+
   final String filename = basename(_image.path);
   final String savedDir = dirname(_image.path);
   Get.back();
@@ -45,32 +45,30 @@ uploadProfilePic(_image) async {
       tag: "uploading Image"); // unique tag for upload task
 
   uploader.progress.listen((progress) {
- 
     print(
         "progress: ${progress.status.description} progress no: ${progress.progress}");
-        
-  }, onDone: (){
+  }, onDone: () {
     print('done!!');
   });
 
-  uploader.result.listen((result) {
-       
-       if(result.status.description == "Completed"){
-         print('done');
-       }
-      
-      
+  uploader.result.listen(
+    (result) {
+      if (result.status.description == "Completed") {
+        print('done');
+      }
 
-    print(result);
-  }, onError: (ex, stacktrace) {
-    // ... code to handle error
-    showCustomSnackBar('upload failed');
-    print(ex);
-    print(stacktrace);
-  }, );
+      print(result);
+    },
+    onError: (ex, stacktrace) {
+      // ... code to handle error
+      showCustomSnackBar('upload failed');
+      print(ex);
+      print(stacktrace);
+    },
+  );
 }
 
-_deleteImageChache() async{
-String url = await HiveCalls().getProfilePhoto();
+_deleteImageChache() async {
+  String url = await HiveCalls().getProfilePhoto();
 // await CachedNetworkImage
 }
